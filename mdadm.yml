@@ -1,0 +1,24 @@
+- name: Configure webserver with nginx
+  hosts: all
+  become: true
+  tasks:
+
+# Example RAID1:
+# mdadm_arrays:
+#   # Define array name
+  - name: 'md0'
+      # Define disk devices to assign to array
+      devices:
+        - '/dev/sdb'
+        - '/dev/sdc'
+      # Define filesystem to partition array with
+      filesystem: 'ext4'
+      # Define the array raid level
+      # 0|1|4|5|6|10
+      level: '1'
+      # Define mountpoint for array device
+      mountpoint: '/mnt/md0'
+      # Define if array should be present or absent
+      state: 'present'
+      # Set mount options (optional)
+      opts: 'noatime'
