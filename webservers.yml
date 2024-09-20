@@ -1,0 +1,38 @@
+---
+- name: Configure webserver with nginx
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Ensure nginx is installed
+      # package - Устанавливает/удаляет пакеты с использованием менеджера пакетов хоста. ansible-doc package
+      ansible.builtin.package:
+        name: nginx
+        update_cache: true
+
+    - name: Copy nginx config file
+      # copy - Копирует файл с локальной машины на хосты. ansible-doc copy
+      ansible.builtin.copy:
+        src: playbooks/files/nginx.conf
+        dest: /etc/nginx/sites-available/default
+
+    - name: Enable configuration
+      # file - Устанавливает атрибуты файла, символической ссылки или каталога. ansible-doc file
+      ansible.builtin.file:
+        dest: /etc/nginx/sites-enabled/default
+        src: /etc/nginx/sites-available/default
+        state: link
+
+    - name: Copy index.html
+      # template - Создает файл на основе шаблона и копирует его на хосты. ansible-doc template
+      ansible.builtin.template:
+        src: playbooks/templates/index.html.j2
+        dest: /usr/share/nginx/html/index.html
+
+    - name: Restart nginx
+      # service - Запускает, останавливает или перезапускает службу. ansible-doc service
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+        enabled: yes
+...
