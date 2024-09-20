@@ -6,7 +6,7 @@ ENV['VAGRANT_SERVER_URL'] = 'https://vagrant.elab.pro'
 Vagrant.configure("2") do |config|
 
   config.vm.box = "ubuntu/focal64"
-  config.vm.define = "testserver"
+  config.vm.hostname = "testserver"
 
   config.vm.network "forwarded_port", id: 'ssh', guest: 22, host: 2202, host_ip: "127.0.0.1", auto_correct: false  
   config.vm.network "forwarded_port", id: 'http', guest: 80, host: 8080, host_ip: "127.0.0.1"
