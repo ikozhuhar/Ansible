@@ -11,8 +11,8 @@
     conf_file: /etc/nginx/sites-available/default
     server_name: localhost
     local_cert_dir: playbooks/files/
-    #http_port: 8080
-    #https_port: 8443
+    http_port: 8080
+    https_port: 8443
 
   handlers:
     - name: Restart nginx
