@@ -1,7 +1,24 @@
 ---
-- name: Configure webserver with nginx
+- name: Configure webserver with Nginx and TLS
   hosts: all
   become: true
+  gather_facts: false
+
+  vars:
+    tls_dir: /etc/nginx/ssl/
+    key_file: nginx.key
+    cert_file: nginx.crt
+    conf_file: /etc/nginx/sites-available/default
+    server_name: localhost
+    #http_port: 8080
+    #https_port: 8443
+
+  handlers:
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
+
   tasks:
 
     - name: Ensure nginx is installed
@@ -9,25 +26,45 @@
       ansible.builtin.package:
         name: nginx
         update_cache: true
+      notify: Restart nginx
 
-    - name: Copy nginx config file
-      # copy - Копирует файл с локальной машины на хосты. ansible-doc copy
+    - name: Create directories for TLS sertificate
+      file:
+        path: "{{ tls_dir }}"
+        state: directory
+        mode: '0750'
+      notify: Restart nginx
+
+    - name: Copy TLS files
       ansible.builtin.copy:
-        src: playbooks/files/nginx.conf
-        dest: /etc/nginx/sites-available/default
+        src: "{{ item }}"
+        dest: "{{ tls_dir }}"
+        mode: '0644'
+      loop:
+        - "{{ key_file }}"
+        - "{{ cert_file }}"
+      notify: Restart nginx
+
+    - name: Manage nginx config template
+      ansible.builtin.template:
+        src: playbooks/templates/nginx.conf.j2
+        dest: "{{ conf_file }}"
+        mode: '0644'
+      notify: Restart nginx
 
     - name: Enable configuration
       # file - Устанавливает атрибуты файла, символической ссылки или каталога. ansible-doc file
       ansible.builtin.file:
-        dest: /etc/nginx/sites-enabled/default
         src: /etc/nginx/sites-available/default
+        dest: /etc/nginx/sites-enabled/default
         state: link
 
-    - name: Copy index.html
+    - name: Install home page
       # template - Создает файл на основе шаблона и копирует его на хосты. ansible-doc template
       ansible.builtin.template:
         src: playbooks/templates/index.html.j2
         dest: /usr/share/nginx/html/index.html
+        mode: '0644'
 
     - name: Restart nginx
       # service - Запускает, останавливает или перезапускает службу. ansible-doc service
