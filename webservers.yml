@@ -75,4 +75,8 @@
         name: nginx
         state: restarted
         enabled: yes
+
+    - name: Install the package net-tools
+      ansible.builtin.apt:
+        name: net-tools
 ...
