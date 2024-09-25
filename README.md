@@ -1,7 +1,8 @@
 # Ansible
 Структура
 
-![image](https://github.com/user-attachments/assets/1b2f8c30-3324-4bee-8065-b74c7e60b0f8)
+![image](https://github.com/user-attachments/assets/56168de0-5efd-4149-a4c0-5d905879908a)
+
 
 
 
